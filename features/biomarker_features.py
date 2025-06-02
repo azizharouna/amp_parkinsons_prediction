@@ -1,7 +1,7 @@
 from typing import Dict
 import pandas as pd
 
-TOP_BIOMARKERS = ['O00391', 'P05067', 'Q9Y6K9']
+TOP_BIOMARKERS = ['O00391', 'P05067']  # Q9Y6K9 removed - no measurements
 
 def create_biomarker_features(df: pd.DataFrame) -> pd.DataFrame:
     """

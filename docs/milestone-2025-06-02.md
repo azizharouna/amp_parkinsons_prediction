@@ -39,3 +39,8 @@ We modified `src/data_loader.py` to:
 1. **Feature Engineering**: Incorporate top proteins into modeling pipeline
 2. **Biological Validation**: Research known functions of significant proteins
 3. **Model Enhancement**: Build protein-specific submodels
+## 🚨 Data Quality Alert
+- **Q9Y6K9 (NEDD8-activating Enzyme E1)** has zero measurements in dataset
+- Confirmed missing in both raw and processed data
+- Removed from biomarker candidate list
+- Focus maintained on O00391 and P05067
