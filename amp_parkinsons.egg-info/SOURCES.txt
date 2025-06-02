@@ -1,0 +1,6 @@
+setup.py
+amp_parkinsons.egg-info/PKG-INFO
+amp_parkinsons.egg-info/SOURCES.txt
+amp_parkinsons.egg-info/dependency_links.txt
+amp_parkinsons.egg-info/requires.txt
+amp_parkinsons.egg-info/top_level.txt

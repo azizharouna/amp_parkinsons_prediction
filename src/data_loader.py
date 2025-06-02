@@ -14,7 +14,10 @@ def load_clinical_data(base_path: Path) -> pd.DataFrame:
         'updrs_4': 'float32',
         'upd23b_clinical_state_on_medication': 'category'
     }
-    df = pd.read_csv(base_path / "data/raw/train_clinical_data.csv", dtype=dtypes)
+    clinical_path = base_path / "data" / "raw" / "train_clinical_data.csv"
+    if not clinical_path.exists():
+        raise FileNotFoundError(f"Clinical data not found at: {clinical_path}")
+    df = pd.read_csv(clinical_path, dtype=dtypes)
     
     # Critical: Convert medication to binary flag
     df['on_medication'] = df['upd23b_clinical_state_on_medication'].eq('On').astype('int8')

@@ -19,7 +19,36 @@ amp_parkinsons_prediction/
 
 ## Key Implementation Journey
 
-### 1. Protein Processing Pipeline (2025-06-02)
+### 1. Clinical Enrichment Pipeline (2025-06-02)
+**Breakthrough Features**:
+- Medication-adjusted UPDRS3 targets
+- Disease stage classification (early/moderate/advanced)
+- Biomarker-protein trajectory tracking
+- Visit-gap aware temporal features
+
+**Clinical Insights Captured**:
+```python
+# Medication adjustment formula
+adjusted_score = raw_score + (med_off_median - med_on_median) * medication_status
+
+# Disease staging logic:
+early_stage = updrs_3 < 20
+moderate_stage = 20 <= updrs_3 < 40
+advanced_stage = updrs_3 >= 40
+
+# Key biomarker proteins:
+TOP_BIOMARKERS = ['O00391', 'P05067', 'Q9Y6K9']
+```
+
+**Validation Protocol**:
+```python
+# After pipeline runs:
+assert 'updrs_3_adj' in df.columns
+assert df['disease_stage'].isin(['early','moderate','advanced']).all()
+assert all(f'prot_{p}' in df.columns for p in TOP_BIOMARKERS)
+```
+
+### 2. Protein Processing Pipeline (2025-06-02)
 **Purpose**: Transform raw peptide data into protein-level features
 
 **Technical Decisions**:
@@ -51,8 +80,51 @@ amp_parkinsons_prediction/
 2. Verify outputs in `data/processed/`
 3. Check `docs/milestone-*.md` for latest progress
 
-## Emergency Context
+## Troubleshooting Guide
+
+### Common Issues and Solutions
+
+1. **Clinical Data Specific**
+   - Symptom: "KeyError during protein merge"
+   - Solution: Auto-creates missing biomarker columns
+   - Prevention: Use TOP_BIOMARKERS constant
+
+   - Symptom: "NaN values in temporal features"
+   - Solution: Group-wise imputation
+   - Debug: Check patient visit sequences
+
+2. **Data Loading Failures**
+   - Symptom: "FileNotFoundError" when loading raw data
+   - Fix:
+     ```python
+     from src.data_loader import validate_paths
+     validate_paths('.')  # Checks all data paths
+     ```
+   - Prevention: Always use `config.PATHS` for file access
+
+2. **Feature Processing Errors**
+   - Symptom: "KeyError" during protein aggregation
+   - Checklist:
+     - Verify peptide CSV has 'UniProt' column
+     - Check for NaN values in peptide abundances
+     - Run `features/protein_processor.py` interactively
+
+3. **Memory Issues**
+   - Symptom: "MemoryError" during processing
+   - Solutions:
+     - Use `api/memory_profiler.py` to monitor usage
+     - Process data in chunks (see `src/data_loader.CHUNK_SIZE`)
+
+4. **Dependency Problems**
+   - Symptom: Import errors for pyarrow/pandas
+   - Recovery:
+     ```powershell
+     pip install -r requirements.txt --force-reinstall
+     ```
+
+### Emergency Context
 If completely lost:
 1. See `config.py` for all paths and constants
 2. Run `python -m pytest tests/` to verify system
 3. Check `notebooks/EDA.ipynb` for data understanding
+4. Consult `docs/milestone-*.md` for recent changes
