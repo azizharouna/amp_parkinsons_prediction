@@ -52,3 +52,37 @@ def create_protein_features(base_path: Path) -> Tuple[pd.DataFrame, pd.DataFrame
     )
     
     return combined, proteins
+
+def process_proteins(base_path: str) -> None:
+    """Process and save protein features to parquet"""
+    # Convert to Path object
+    base_path = Path(base_path)
+    
+    # Create processed directory if it doesn't exist
+    processed_dir = base_path / "data" / "processed"
+    processed_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate and save protein features
+    protein_features, _ = create_protein_features(base_path)
+    
+    # Pivot to wide format (UniProt IDs as columns)
+    wide_features = protein_features.pivot(
+        index=['visit_id'],
+        columns='UniProt',
+        values='NPX'
+    ).add_prefix('NPX_').reset_index()
+    
+    # Merge with visit metadata
+    peptides = load_peptides(base_path)
+    wide_features = wide_features.merge(
+        peptides[['visit_id', 'patient_id', 'visit_month']].drop_duplicates(),
+        on='visit_id'
+    )
+    
+    # Save to parquet
+    processed_dir = base_path / "data/processed"
+    processed_dir.mkdir(parents=True, exist_ok=True)
+    
+    output_path = processed_dir / "protein_features.parquet"
+    wide_features.to_parquet(output_path)
+    print(f"Saved processed protein features to {output_path}")

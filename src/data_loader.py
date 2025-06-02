@@ -14,7 +14,7 @@ def load_clinical_data(base_path: Path) -> pd.DataFrame:
         'updrs_4': 'float32',
         'upd23b_clinical_state_on_medication': 'category'
     }
-    df = pd.read_csv(base_path / "train_clinical_data.csv", dtype=dtypes)
+    df = pd.read_csv(base_path / "data/raw/train_clinical_data.csv", dtype=dtypes)
     
     # Critical: Convert medication to binary flag
     df['on_medication'] = df['upd23b_clinical_state_on_medication'].eq('On').astype('int8')
@@ -39,7 +39,7 @@ def load_peptides(base_path: Path) -> pd.DataFrame:
         'Peptide': 'category',
         'PeptideAbundance': 'float32'
     }
-    return pd.read_csv(base_path / "train_peptides.csv", dtype=dtypes)
+    return pd.read_csv(base_path / "data\\raw\\train_peptides.csv", dtype=dtypes)
 
 def load_proteins(base_path: Path) -> pd.DataFrame:
     """Protein data (pre-aggregated)"""
@@ -50,4 +50,4 @@ def load_proteins(base_path: Path) -> pd.DataFrame:
         'UniProt': 'category',
         'NPX': 'float32'
     }
-    return pd.read_csv(base_path / "train_proteins.csv", dtype=dtypes)
+    return pd.read_csv(base_path / "data/raw/train_proteins.csv", dtype=dtypes)

@@ -4,6 +4,9 @@ from .clinical_enricher import ClinicalDataEnricher
 from .protein_processor import create_protein_features
 from .temporal_features import create_all_temporal_features
 from src.data_loader import load_clinical_data, load_peptides, load_proteins
+from .protein_processor import create_protein_features
+from .temporal_features import create_all_temporal_features
+from src.data_loader import load_clinical_data, load_peptides, load_proteins
 
 class FeaturePipeline:
     def __init__(self, base_path: str):

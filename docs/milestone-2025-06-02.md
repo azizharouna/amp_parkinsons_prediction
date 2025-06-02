@@ -235,3 +235,16 @@ graph TD
 2. [ ] Generate feature importance plots
 3. [ ] Validate clinical error metrics
 4. [ ] Document biological interpretations
+## Path Handling Fix (2024-06-02)
+- Updated data loader to use Windows-compatible path separators (`\\`)
+- Ensures proper file loading on Windows systems
+- Affected files:
+  - `src/data_loader.py` (peptides and proteins loading)
+## Protein Processing Pipeline (2024-06-02)
+- Successfully processed raw protein data
+- Output saved to: `data/processed/protein_features.parquet`
+- Key steps:
+  - Peptide aggregation
+  - Protein abundance calculation
+  - Feature engineering
+- Directory creation: Auto-created processed directory if missing
