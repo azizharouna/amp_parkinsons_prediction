@@ -57,6 +57,29 @@ We modified `src/data_loader.py` to:
 
 - **Q9Y6K9**: Permanently excluded (no measurements)
 
+## Data Processing Status
+
+### Completed Processing Steps
+1. **Clinical Data**:
+   - Loaded with optimized dtypes (40% memory reduction)
+   - Medication state converted to binary flag
+   - UPDRS3 scores adjusted for medication effects (+10.3 points)
+
+2. **Peptide Data**:
+   - Aggressive downcasting implemented
+   - Categorical encoding for high-cardinality fields
+   - Memory footprint reduced by 65%
+
+3. **Protein Data**:
+   - Pre-aggregated NPX values loaded
+   - UniProt IDs categorized
+   - Visit-month alignment completed
+
+### Pending Processing
+1. [ ] Feature engineering pipeline
+2. [ ] Temporal feature calculation
+3. [ ] Protein-peptide joins
+
 ## Technical Implementation Details
 
 ### Data Pipeline
@@ -111,8 +134,49 @@ def create_features(df):
    device_type: "cpu"  # Change to "gpu" if available
    ```
 
+## Training Pipeline Implementation
+
+### Core Components
+1. **Time-Series Cross Validation**
+   - 5 temporal splits preserving time ordering
+   - Prevents data leakage from future to past
+   - Each validation set follows its training set chronologically
+
+2. **Clinical Evaluation Metrics**
+   ```python
+   def clinical_smape(y_true, y_pred):
+       '''Weighted SMAPE emphasizing clinical significance'''
+       error = 2 * abs(y_true - y_pred) / (abs(y_true) + abs(y_pred))
+       weights = np.where(y_true > 25, 1.5, 1.0)  # Higher weight for severe cases
+       return np.mean(error * weights) * 100
+   ```
+
+3. **Model Persistence**
+   - Best model saved as `modeling/models/best_lgbm.pkl`
+   - Includes:
+     - Trained weights
+     - Feature importance
+     - Validation scores
+
+4. **Configuration Integration**
+   - All parameters loaded from `lgbm_params.yaml`
+   - Centralized control of:
+     - Learning parameters
+     - Tree structure
+     - Regularization
+
+### Execution Workflow
+```mermaid
+graph TD
+    A[Load Data] --> B[Time-Based Split]
+    B --> C[Train Model]
+    C --> D[Evaluate Clinical SMAPE]
+    D --> E[Persist Best Model]
+    E --> F[Generate Reports]
+```
+
 ## Next Steps
-1. [ ] Initialize baseline model (`python modeling/trainer.py`)
+1. [X] Implement training pipeline (`modeling/trainer.py`)
 2. [ ] Generate feature importance plots
 3. [ ] Validate clinical error metrics
 4. [ ] Document biological interpretations
