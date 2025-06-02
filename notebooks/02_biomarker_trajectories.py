@@ -11,8 +11,8 @@ from src.data_loader import load_clinical_data, load_proteins
 clinical = load_clinical_data(Path('data/raw'))
 proteins = load_proteins(Path('data/raw'))
 
-# Top biomarkers from lead-lag analysis
-TOP_BIOMARKERS = ['O00391', 'P05067', 'Q9Y6K9']
+# Validated biomarkers (Q9Y6K9 removed - no measurements)
+TOP_BIOMARKERS = ['O00391', 'P05067']
 
 def plot_biomarker_trajectories(protein_id: str, n_patients=5):
     """Plot protein vs UPDRS3 trajectories for sample patients."""
