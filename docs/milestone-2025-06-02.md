@@ -57,6 +57,61 @@ We modified `src/data_loader.py` to:
 
 - **Q9Y6K9**: Permanently excluded (no measurements)
 
+## Implemented Feature Pipelines
+
+### Clinical Data Enricher
+1. **Medication Adjustments**:
+   - Calculates effect size for all UPDRS targets:
+     ```python
+     adjustment = median(Off) - median(On)
+     ```
+   - Creates adjusted versions: `{target}_adj`
+
+2. **Clinical Features**:
+   - `total_updrs`: Sum of all UPDRS parts
+   - `motor_score`: UPDRS-3 + UPDRS-4
+   - `med_response_ratio`: Actual/Adjusted score
+
+3. **Disease Staging**:
+   - Early stage (total_updrs < 30)
+   - Late stage (total_updrs ≥ 60)
+
+### Protein Processing Pipeline
+
+### Protein Processing Pipeline
+1. **Weighted Aggregation**:
+   - Peptide abundances weighted by occurrence frequency
+   - Formula: `weight = peptide_count / total_protein_peptides`
+   - Memory efficient operations (65% reduction)
+
+2. **Quality Metrics**:
+   ```python
+   df['measurement_ratio'] = NPX / weighted_abundance
+   df['measurement_diff'] = NPX - weighted_abundance
+   ```
+   - Tracks agreement between measurement methods
+
+3. **Output**:
+   - Combined protein-level features
+   - Raw and processed data preserved
+
+### Temporal Features Pipeline
+1. **Visit Patterns**:
+   - `months_since_last_visit`: Exact time gap
+   - `visit_frequency`: Average interval
+
+2. **Disease Progression**:
+   ```python
+   slope = np.polyfit(visit_month, updrs_score, 1)[0]
+   ```
+   - Calculated for all UPDRS targets
+   - Medication-adjusted versions included
+
+3. **Protein Stability**:
+   - Coefficient of variation (CV)
+   - Maximum fold change
+   - Patient-specific calculations
+
 ## Data Processing Status
 
 ### Completed Processing Steps
