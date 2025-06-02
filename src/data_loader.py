@@ -18,6 +18,15 @@ def load_clinical_data(base_path: Path) -> pd.DataFrame:
     
     # Critical: Convert medication to binary flag
     df['on_medication'] = df['upd23b_clinical_state_on_medication'].eq('On').astype('int8')
+    
+    # Calculate medication adjustment factor
+    med_off_median = df[df['upd23b_clinical_state_on_medication']=='Off']['updrs_3'].median()
+    med_on_median = df[df['upd23b_clinical_state_on_medication']=='On']['updrs_3'].median()
+    adjustment = med_off_median - med_on_median
+    
+    # Create adjusted target
+    df['updrs_3_adj'] = df['updrs_3'] + adjustment * df['on_medication']
+    
     return df
 
 def load_peptides(base_path: Path) -> pd.DataFrame:
